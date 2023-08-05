@@ -21,10 +21,10 @@ Because the least significant bit has the smallest impact on the overall value, 
 ## Useful papers 
 
 
-### Highly Secured Hybrid Image Steganography with an Improved Key
+### [Highly Secured Hybrid Image Steganography with an Improved Key](https://dergipark.org.tr/tr/download/article-file/2475349)
 Generation and Exchange for One-Time-Pad Encryption Method
 
-https://dergipark.org.tr/tr/download/article-file/2475349
+
 
 Summary from the paper
 ```
@@ -42,9 +42,9 @@ Discrete Cosine Transform (DCT)
 ```
 
 
-### IMAGE BASED STEGANOGRAPHY AND CRYPTOGRAPHY
+### [IMAGE BASED STEGANOGRAPHY AND CRYPTOGRAPHY](https://www.diag.uniroma1.it/~bloisi/steganography/isc.pdf)
 
-https://www.diag.uniroma1.it/~bloisi/steganography/isc.pdf
+
 
 They propose a new method for integrating cryptography and steganography, which they call ISC (Image-based Steganography and Cryptography). 
 
@@ -55,9 +55,9 @@ It's designed to work with bit streams scattered over multiple images or with st
 
 
 
-### The Art of Data Hiding with Reed-Solomon Error Correcting Codes
+### [The Art of Data Hiding with Reed-Solomon Error Correcting Codes](https://arxiv.org/abs/1411.4790)
 
-https://arxiv.org/abs/1411.4790
+
 
 Basically this paper discusses the use of Reed-Solomon error correcting codes in steganography, which is the art of hiding information in a way that is not detectable to the naked eye. The authors propose a design that substitutes redundant Reed-Solomon codes with the steganographic message. 
 
