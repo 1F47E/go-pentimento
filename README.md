@@ -61,6 +61,13 @@ It's designed to work with bit streams scattered over multiple images or with st
 
 Basically this paper discusses the use of Reed-Solomon error correcting codes in steganography, which is the art of hiding information in a way that is not detectable to the naked eye. The authors propose a design that substitutes redundant Reed-Solomon codes with the steganographic message. 
 
+### Steganography Toolkits
+```
+docker run -it --rm -v $(pwd)/data:/data dominicbreuker/stego-toolkit /bin/bash
+zsteg -a out.png
+```
+For now LSB is easy to detect
+
 ### Name idea
 https://en.wikipedia.org/wiki/Pentimento
 
