@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"go-pentimento/lsb"
 	"image"
 	"image/draw"
 	"image/png"
 	"os"
+
+	"github.com/1F47E/go-pentimento/pkg/lsb"
 )
 
 type Command string
@@ -73,7 +74,7 @@ func main() {
 		if err != nil {
 			panic(fmt.Errorf("error reading data file: %v", err))
 		}
-		fmt.Printf("Text to hide: %d bits\n", len(data)*8)
+		fmt.Printf("Data to hide: %d bytes\n", len(data))
 
 		// change in place
 		err = lsb.Encode(imgRGBA, data)

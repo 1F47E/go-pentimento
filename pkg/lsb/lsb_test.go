@@ -12,7 +12,10 @@ import (
 )
 
 func TestEncodeDecode(t *testing.T) {
-	origFilename := "../data/original.png"
+	origFilename := "../../data/original.png"
+	dataFilename := "../../README.md"
+	outFilename := "../../data/out.png"
+
 	imgFile, err := os.Open(origFilename)
 	assert.NoError(t, err, "Error opening image file")
 	defer imgFile.Close()
@@ -25,14 +28,12 @@ func TestEncodeDecode(t *testing.T) {
 		t.Errorf("Image is not RGBA format")
 	}
 
-	dataFilename := "../README.md"
 	textFile, err := os.ReadFile(dataFilename)
 	assert.NoError(t, err, "Error reading ", dataFilename)
 
 	err = Encode(rgba, textFile)
 	assert.NoError(t, err, "Error encoding data")
 
-	outFilename := "../data/out.png"
 	outFile, err := os.Create(outFilename)
 	assert.NoError(t, err, "Error creating output file")
 	defer outFile.Close()

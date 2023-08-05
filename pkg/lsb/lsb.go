@@ -69,21 +69,24 @@ func Encode(img *image.RGBA, data []byte) error {
 				// right-shifts the byte by bitPos
 				// example 01100110 becomes 00011001
 				// 0x1 = 00000001 = mask
+				bit := (data[byteIndex] >> bitPos)
+				bitMasked := bit & lsbMask
 
 				// shift LSB to 2LSB bassed on pixel pos hash
 				// p := findBitPos(x, y)
 				// fmt.Printf("p x:%d y:%d: %08b\n", x, y, p)
 				// bit := (data[byteIndex] >> bitPos) & p
-				bit := (data[byteIndex] >> bitPos) & lsbMask
 
 				// 11111110 = 0xFE = 254
+				// works only for 1LSB
+				var pixelPosMask uint8 = 0b11111110
 				switch i {
 				case 0:
-					r = (r & 254) | bit
+					r = (r & pixelPosMask) | bitMasked
 				case 1:
-					g = (g & 254) | bit
+					g = (g & pixelPosMask) | bitMasked
 				case 2:
-					b = (b & 254) | bit
+					b = (b & pixelPosMask) | bitMasked
 				}
 
 				bitIndex++
@@ -116,6 +119,7 @@ func Decode(img *image.RGBA) []byte {
 			// 0x1 = 00000001 = mask
 			// p := findBitPos(x, y)
 			// fmt.Printf("p: %08b\n", p)
+			// works only for 1LSB
 			for i := 0; i < 3; i++ {
 				var bit uint8
 				switch i {
