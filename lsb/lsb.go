@@ -26,11 +26,14 @@ package lsb
 
 import (
 	"fmt"
+	"hash/fnv"
 	"image"
 	"image/color"
 )
 
 var eofMarker byte = 0xFF
+
+const lsbMask = 00000001
 
 func Encode(img *image.RGBA, data []byte) error {
 	data = append(data, eofMarker)
@@ -62,10 +65,16 @@ func Encode(img *image.RGBA, data []byte) error {
 				// ===== get bit from our data byte
 
 				bitPos := uint(bitIndex % 8)
+
 				// right-shifts the byte by bitPos
 				// example 01100110 becomes 00011001
 				// 0x1 = 00000001 = mask
-				bit := (data[byteIndex] >> bitPos) & 00000001
+
+				// shift LSB to 2LSB bassed on pixel pos hash
+				// p := findBitPos(x, y)
+				// fmt.Printf("p x:%d y:%d: %08b\n", x, y, p)
+				// bit := (data[byteIndex] >> bitPos) & p
+				bit := (data[byteIndex] >> bitPos) & lsbMask
 
 				// 11111110 = 0xFE = 254
 				switch i {
@@ -105,15 +114,17 @@ func Decode(img *image.RGBA) []byte {
 
 			// red, green, blue = 3 bits
 			// 0x1 = 00000001 = mask
+			// p := findBitPos(x, y)
+			// fmt.Printf("p: %08b\n", p)
 			for i := 0; i < 3; i++ {
 				var bit uint8
 				switch i {
 				case 0:
-					bit = r & 00000001
+					bit = r & lsbMask
 				case 1:
-					bit = g & 00000001
+					bit = g & lsbMask
 				case 2:
-					bit = b & 00000001
+					bit = b & lsbMask
 				}
 
 				// ====== format out byte with the bit extracted
@@ -143,4 +154,23 @@ func Decode(img *image.RGBA) []byte {
 
 func MaxBits(img *image.RGBA) int {
 	return img.Bounds().Dx() * img.Bounds().Dy() * 3
+}
+
+func hashPos(x, y int) int {
+	pix := fmt.Sprintf("%d", x+y)
+	hash := fnv.New64a()
+	hash.Write([]byte(pix))
+	return int(hash.Sum64())
+}
+
+// Trying to hide LSB from detection
+// move the bit from true LSB to the right based on a hash from pixel pos to hide LSB
+func findBitPos(x, y int) uint8 {
+	h := hashPos(x, y)
+	pos := h % 2
+	if pos == 0 {
+		return 1
+	} else {
+		return 2
+	}
 }
