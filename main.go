@@ -2,23 +2,48 @@ package main
 
 import (
 	"fmt"
+	"go-pentimento/lsb"
 	"image"
 	"image/draw"
 	"image/png"
 	"os"
 )
 
-func maxHiddenBits(img *image.RGBA) int {
-	return img.Bounds().Dx() * img.Bounds().Dy() * 3
-}
+type Command string
+
+const (
+	Encode Command = "encode"
+	Decode Command = "decode"
+	Fit    Command = "fit"
+)
+
+const usage = `Usage: go run main.go encode|decode|fit <filename> text`
 
 func main() {
+	// debug_createWhiteImage()
+	// panic("debug")
+
 	// get filename from arg
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: go run main.go <filename>")
+	if len(os.Args) < 3 {
+		fmt.Println(usage)
 		os.Exit(1)
 	}
-	filename := os.Args[1]
+	cmd := Command(os.Args[1])
+	if cmd != Encode && cmd != Decode && cmd != Fit {
+		fmt.Println(usage)
+		os.Exit(1)
+	}
+	filename := os.Args[2]
+
+	// get text from arg only if encoding
+	datafile := ""
+	if cmd == Encode {
+		if len(os.Args) < 4 {
+			fmt.Println(usage)
+			os.Exit(1)
+		}
+		datafile = os.Args[3]
+	}
 
 	// open image
 	f, err := os.Open(filename)
@@ -34,14 +59,82 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// convert to RGBA
+
 	// convert to RGBA
 	bounds := img.Bounds()
-	imgRGBA := image.NewRGBA(bounds)
+	imgRGBA := image.NewRGBA(bounds) // returns pointer
 	draw.Draw(imgRGBA, bounds, img, bounds.Min, draw.Src)
 
-	// calc size of data that can be hidden
-	maxBits := maxHiddenBits(imgRGBA)
-	fmt.Printf("Max data size that can be hidden: %dB, %d Bytes, %d KB\n", maxBits, maxBits/8, maxBits/8/1024)
+	// ENCODE
+	if cmd == Encode {
 
+		// read data file
+		data, err := os.ReadFile(datafile)
+		if err != nil {
+			panic(fmt.Errorf("error reading data file: %v", err))
+		}
+		fmt.Printf("Text to hide: %d bits\n", len(data)*8)
+
+		// change in place
+		err = lsb.Encode(imgRGBA, data)
+		if err != nil {
+			panic(err)
+		}
+
+		outFilename := "out.png"
+		err = saveImage(imgRGBA, outFilename)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Saved image to", outFilename)
+		os.Exit(0)
+	}
+
+	// DECODE
+	if cmd == Decode {
+		data := lsb.Decode(imgRGBA)
+		fmt.Printf("Hidden data: %s\n", string(data))
+		os.Exit(0)
+	}
+
+	// FIT
+	if cmd == Fit {
+		maxBits := lsb.MaxBits(imgRGBA)
+		fmt.Printf("Max data size that can be hidden: %dB, %d Bytes, %d KB\n", maxBits, maxBits/8, maxBits/8/1024)
+	}
+}
+
+func saveImage(img *image.RGBA, filename string) error {
+	// save image
+	f, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("error creating file: %v", err)
+	}
+	defer f.Close()
+
+	// encode image
+	err = png.Encode(f, img)
+	if err != nil {
+		return fmt.Errorf("error encoding image: %v", err)
+	}
+	return nil
+}
+
+func debugCreateWhiteImage() {
+	// create white image
+	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	draw.Draw(img, img.Bounds(), image.White, image.ZP, draw.Src)
+
+	// save image
+	f, err := os.Create("white.png")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	// encode image
+	err = png.Encode(f, img)
+	if err != nil {
+		panic(err)
+	}
 }
