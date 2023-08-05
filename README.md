@@ -5,7 +5,7 @@
 This project aims to explore, research, and implement some techniques in the field of image steganography using Golang.
 
 ## What is steganography?
-![stenography](assets/SteganographicModel.png)
+![steganography](assets/SteganographicModel.png)
 
 ## LSB - basic technique used for steanography
 >
