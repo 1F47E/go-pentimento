@@ -12,7 +12,8 @@ import (
 )
 
 func TestEncodeDecode(t *testing.T) {
-	imgFile, err := os.Open("../original.png")
+	origFilename := "../data/original.png"
+	imgFile, err := os.Open(origFilename)
 	assert.NoError(t, err, "Error opening image file")
 	defer imgFile.Close()
 
@@ -24,20 +25,22 @@ func TestEncodeDecode(t *testing.T) {
 		t.Errorf("Image is not RGBA format")
 	}
 
-	textFile, err := os.ReadFile("../README.md")
-	assert.NoError(t, err, "Error reading README.md")
+	dataFilename := "../README.md"
+	textFile, err := os.ReadFile(dataFilename)
+	assert.NoError(t, err, "Error reading ", dataFilename)
 
 	err = Encode(rgba, textFile)
 	assert.NoError(t, err, "Error encoding data")
 
-	outFile, err := os.Create("out.png")
+	outFilename := "../data/out.png"
+	outFile, err := os.Create(outFilename)
 	assert.NoError(t, err, "Error creating output file")
 	defer outFile.Close()
 
 	err = png.Encode(outFile, rgba)
 	assert.NoError(t, err, "Error encoding output image file")
 
-	outFileReRead, err := os.Open("out.png")
+	outFileReRead, err := os.Open(outFilename)
 	assert.NoError(t, err, "Error opening output file")
 	defer outFileReRead.Close()
 
@@ -58,6 +61,6 @@ func TestEncodeDecode(t *testing.T) {
 	}
 
 	// cleanup
-	err = os.Remove("out.png")
-	assert.NoError(t, err, "Error removing out.png")
+	err = os.Remove(outFilename)
+	assert.NoError(t, err, "Error removing ", outFilename)
 }
