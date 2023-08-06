@@ -45,7 +45,6 @@ Discrete Cosine Transform (DCT)
 ### [IMAGE BASED STEGANOGRAPHY AND CRYPTOGRAPHY](https://www.diag.uniroma1.it/~bloisi/steganography/isc.pdf)
 
 
-
 They propose a new method for integrating cryptography and steganography, which they call ISC (Image-based Steganography and Cryptography). 
 
 It uses images as cover objects for steganography and as keys for cryptography. 
@@ -58,8 +57,18 @@ It's designed to work with bit streams scattered over multiple images or with st
 ### [The Art of Data Hiding with Reed-Solomon Error Correcting Codes](https://arxiv.org/abs/1411.4790)
 
 
-
 Basically this paper discusses the use of Reed-Solomon error correcting codes in steganography, which is the art of hiding information in a way that is not detectable to the naked eye. The authors propose a design that substitutes redundant Reed-Solomon codes with the steganographic message. 
+
+### [Embedding in Two Least Significant Bits with Wet Paper Coding](https://eprint.iacr.org/2008/255.pdf)
+
+
+Ideas from the paper:
+
+LSB Matching Revisited (LSBMR): This scheme improves the security of LSB matching by reducing the number of changes made to the cover image, making it harder for steganalytic tools to detect hidden messages.
+
+Enhanced LSBMR (ELSBMR): This scheme further improves the security of LSBMR by using a pseudorandom number generator to determine the locations of the pixels to be changed, making it even more difficult for steganalytic tools to detect hidden messages.
+
+Double-layered Embedding (DLE): This scheme uses two different embedding rates for different parts of the image, improving the security of the hidden message by making it harder to detect with steganalytic tools.
 
 ### Name idea
 https://en.wikipedia.org/wiki/Pentimento
