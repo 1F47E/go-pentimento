@@ -32,10 +32,10 @@ import (
 	"image/color"
 )
 
-var eofMarker = []byte{0xFF, 0xFF, 0xFF}
+const EOF_MARKER = 0xFF
 
 func Encode(img *image.RGBA, data []byte) error {
-	data = append(data, eofMarker...)
+	data = append(data, EOF_MARKER)
 
 	// check if data fits in image
 	maxLen := MaxBits(img)
@@ -172,7 +172,7 @@ func Decode(img *image.RGBA) []byte {
 	}
 
 	// cut off on EOF
-	eofIndex := bytes.Index(data, eofMarker)
+	eofIndex := bytes.IndexByte(data, EOF_MARKER)
 	if eofIndex != -1 {
 		data = data[:eofIndex]
 	}
