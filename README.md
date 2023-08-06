@@ -1,8 +1,41 @@
 # Pentimento
-> In painting, a pentimento (italian) is "the presence or emergence of earlier images, forms, or strokes that have been changed and painted over"
+> In painting, a [pentimento](https://en.wikipedia.org/wiki/Pentimento) (italian) is "the presence or emergence of earlier images, forms, or strokes that have been changed and painted over"
 
 
 This project aims to explore, research, and implement some techniques in the field of image steganography using Golang.
+
+## Demo results
+<table>
+  <tr>
+    <td valign="top"><b>Original Image</b><br>
+        <a href="assets/original.png">
+            <img src="assets/original.png" alt="original" width="420">
+        </a>
+    </td>
+    <td valign="top"><b>Image with 212 Kb of hidden text</b><br>
+        <a href="assets/hidden.png">
+            <img src="assets/hidden.png" alt="hidden" width="420">
+        </a>
+    </td>
+  </tr>
+</table>
+
+## How to use (for now)
+
+Encode
+```
+go run main.go encode original.png secrets.txt
+```
+
+Decode
+```
+go run main.go decode hidden.png
+```
+
+Test fit size
+```
+go run main.go fit original.png
+```
 
 ## What is steganography?
 ![stenography](assets/SteganographicModel.png)
@@ -15,7 +48,7 @@ In the context of an image, each pixel is represented by a binary number. The "l
 
 Because the least significant bit has the smallest impact on the overall value, changing it usually results in a minor alteration to the pixel's color. This change is typically so small that it's imperceptible to the human eye, making LSB a popular method for hiding information within images.
 
-![LSB](assets/LSB.jpg)
+![LSB](assets/_LSB.jpg)
 
 
 ## Useful papers 
@@ -70,7 +103,13 @@ Enhanced LSBMR (ELSBMR): This scheme further improves the security of LSBMR by u
 
 Double-layered Embedding (DLE): This scheme uses two different embedding rates for different parts of the image, improving the security of the hidden message by making it harder to detect with steganalytic tools.
 
-### Name idea
-https://en.wikipedia.org/wiki/Pentimento
+### Steganography Toolkits
+https://www.blackhatethicalhacking.com/tools/steganography-toolkits/
+```
+docker run -it --rm -v $(pwd)/data:/data dominicbreuker/stego-toolkit /bin/bash
+zsteg -a out.png
+```
+Simple LSB zsteg detects 100% 
 
-
+After our custom LSB hashing algo zsteg shows garbage
+![zsteg_results](assets/zsteg.jpg)
