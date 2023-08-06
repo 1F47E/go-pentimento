@@ -1,44 +1,12 @@
 # Pentimento
 > In painting, a [pentimento](https://en.wikipedia.org/wiki/Pentimento) (italian) is "the presence or emergence of earlier images, forms, or strokes that have been changed and painted over"
 
-TLDR:
-Its a tool to hide text inside images.
+TLDR
+
+Its a tool to hide encrypted data inside images and stay undetected.
 
 This project aims to dive into the image steganography, researching and implementing various techniques using Golang.
-The purpose is to practice bitwise operations, encryption, and error correction.
-
-## Demo results
-<table>
-  <tr>
-    <td valign="top"><b>Original Image</b><br>
-        <a href="assets/original.png">
-            <img src="assets/original.png" alt="original" width="420">
-        </a>
-    </td>
-    <td valign="top"><b>Image with 212 Kb of hidden text</b><br>
-        <a href="assets/hidden.png">
-            <img src="assets/hidden.png" alt="hidden" width="420">
-        </a>
-    </td>
-  </tr>
-</table>
-
-## How to use (for now)
-
-Encode
-```
-go run main.go encode original.png secrets.txt
-```
-
-Decode
-```
-go run main.go decode hidden.png
-```
-
-Test fit size
-```
-go run main.go fit original.png
-```
+The purpose is to practice bitwise operations, cryptography and error correction.
 
 ## Demo results
 <table>
@@ -77,7 +45,7 @@ go run main.go fit original.png
 ![stenography](assets/SteganographicModel.png)
 
 ## LSB - basic technique used for steanography
->
+
 The Least Significant Bit (LSB) is a method used in digital steganography for hiding information within a digital file, such as an image or audio file.
 
 In the context of an image, each pixel is represented by a binary number. The "least significant bit" is the last bit in this binary representation. The LSB method works by replacing these least significant bits with the bits from the data that needs to be hidden.
@@ -134,11 +102,17 @@ Basically this paper discusses the use of Reed-Solomon error correcting codes in
 
 Ideas from the paper:
 
-LSB Matching Revisited (LSBMR): This scheme improves the security of LSB matching by reducing the number of changes made to the cover image, making it harder for steganalytic tools to detect hidden messages.
+**LSB Matching Revisited (LSBMR)**
 
-Enhanced LSBMR (ELSBMR): This scheme further improves the security of LSBMR by using a pseudorandom number generator to determine the locations of the pixels to be changed, making it even more difficult for steganalytic tools to detect hidden messages.
+This scheme improves the security of LSB matching by reducing the number of changes made to the cover image, making it harder for steganalytic tools to detect hidden messages.
 
-Double-layered Embedding (DLE): This scheme uses two different embedding rates for different parts of the image, improving the security of the hidden message by making it harder to detect with steganalytic tools.
+**Enhanced LSBMR (ELSBMR)**
+
+This scheme further improves the security of LSBMR by using a pseudorandom number generator to determine the locations of the pixels to be changed, making it even more difficult for steganalytic tools to detect hidden messages.
+
+**Double-layered Embedding (DLE)**
+
+This scheme uses two different embedding rates for different parts of the image, improving the security of the hidden message by making it harder to detect with steganalytic tools.
 
 
 ### Steganography Toolkits
