@@ -25,19 +25,19 @@
 package lsb
 
 import (
+	"bytes"
 	"fmt"
 	"hash/fnv"
 	"image"
 	"image/color"
 )
 
-var eofMarker byte = 0xFF
-
-const lsbMask = 00000001
+var eofMarker = []byte{0xFF, 0xFF, 0xFF}
 
 func Encode(img *image.RGBA, data []byte) error {
-	data = append(data, eofMarker)
+	data = append(data, eofMarker...)
 
+	// check if data fits in image
 	maxLen := MaxBits(img)
 	if len(data)*8 > maxLen {
 		return fmt.Errorf("data is too large to fit in image")
@@ -45,114 +45,138 @@ func Encode(img *image.RGBA, data []byte) error {
 	perc := float64(len(data)*8) / float64(maxLen) * 100
 	fmt.Printf("Encoding %d/%d bytes - %.2f%%\n", len(data), maxLen, perc)
 
+	// track the index of corrent write bit
 	bitIndex := 0
-	byteIndex := 0
 
+	// iterace over pixels
 	for y := 0; y < img.Bounds().Dy(); y++ {
 		for x := 0; x < img.Bounds().Dx(); x++ {
 			// current pixel
 			c := img.RGBAAt(x, y)
 			r, g, b := c.R, c.G, c.B
-			// fmt.Printf("Pixel %d,%d: %08b %08b %08b\n", x, y, r, g, b)
 
-			// encode 3 bits to every color channel
+			// decide what pixl bit to use, classic LSB or shift right by 1
+			// its not exactly 2LSB, because we still using only 1 bit, not 2
+			// to hide LSB from detection
+			use2LSB := useSecondBit(x, y)
+			var mask uint8
+			if use2LSB {
+				mask = 0b11111101
+			} else {
+				mask = 0b11111110
+			}
+
+			// iterate over RGB channels
 			for i := 0; i < 3; i++ {
-				// data is exhausted
-				if byteIndex >= len(data) {
+				if bitIndex >= len(data)*8 {
+					// since we writing to the image in place - just quit
 					return nil
 				}
 
-				// ===== get bit from our data byte
+				// get the bit from data
+				byteIndex := bitIndex / 8
+				bitPos := bitIndex % 8
 
-				bitPos := uint(bitIndex % 8)
-
-				// right-shifts the byte by bitPos
-				// example 01100110 becomes 00011001
-				// 0x1 = 00000001 = mask
-				bit := (data[byteIndex] >> bitPos)
-				bitMasked := bit & lsbMask
-
-				// shift LSB to 2LSB bassed on pixel pos hash
-				// p := findBitPos(x, y)
-				// fmt.Printf("p x:%d y:%d: %08b\n", x, y, p)
-				// bit := (data[byteIndex] >> bitPos) & p
-
-				// 11111110 = 0xFE = 254
-				// works only for 1LSB
-				var pixelPosMask uint8 = 0b11111110
-				switch i {
-				case 0:
-					r = (r & pixelPosMask) | bitMasked
-				case 1:
-					g = (g & pixelPosMask) | bitMasked
-				case 2:
-					b = (b & pixelPosMask) | bitMasked
+				// Get the bit value
+				bit := (data[byteIndex] >> bitPos) & 1
+				if use2LSB {
+					bit = bit << 1
 				}
 
 				bitIndex++
 
-				if bitIndex%8 == 0 {
-					byteIndex++
+				switch i {
+				case 0:
+					// fmt.Printf("-red before masking: %08b\n", r)
+
+					// 1 - zero out the bit we want to change
+					// original state of r (for example):    0b10010110
+					// mask:                               & 0b11111101
+					// result after masking:                 0b10010100
+					r = r & mask
+
+					// 2 - apply the bit to the channel
+					// current state of r (after masking):  0b10010100
+					// bit to set for example 1           | 0b00000010
+					// res after ORing the bit:             0b10010110
+					r |= bit
+
+					// fmt.Printf("+red after masking: %08b\n", r)
+
+				case 1:
+					g = (g & mask) | bit
+				case 2:
+					b = (b & mask) | bit
 				}
 			}
 
-			// update pixel
-			img.SetRGBA(x, y, color.RGBA{r, g, b, c.A})
+			// apply pixel
+			img.Set(x, y, color.RGBA{r, g, b, 255})
 		}
 	}
+
+	if bitIndex < len(data)*8 {
+		return fmt.Errorf("not all data was encoded")
+	}
+
 	return nil
 }
 
 func Decode(img *image.RGBA) []byte {
-	data := make([]byte, 0)
-	var currentByte byte
+	data := []byte{}
 	bitIndex := 0
 
 	for y := 0; y < img.Bounds().Dy(); y++ {
 		for x := 0; x < img.Bounds().Dx(); x++ {
-			// current pixel
 			c := img.RGBAAt(x, y)
 			r, g, b := c.R, c.G, c.B
-			// fmt.Printf("Pixel %d,%d: %08b %08b %08b\n", x, y, r, g, b)
 
-			// red, green, blue = 3 bits
-			// 0x1 = 00000001 = mask
-			// p := findBitPos(x, y)
-			// fmt.Printf("p: %08b\n", p)
-			// works only for 1LSB
+			use2LSB := useSecondBit(x, y)
+
 			for i := 0; i < 3; i++ {
-				var bit uint8
+				var channelValue byte
 				switch i {
 				case 0:
-					bit = r & lsbMask
+					channelValue = r
 				case 1:
-					bit = g & lsbMask
+					channelValue = g
 				case 2:
-					bit = b & lsbMask
+					channelValue = b
 				}
 
-				// ====== format out byte with the bit extracted
+				// for 2LSB shift bit right
+				if use2LSB {
+					channelValue = channelValue >> 1
+				}
 
-				// position in the byte where we want to put the bit
-				bitPos := uint(bitIndex % 8)
-				// bitwise OR operation with the current byte
-				// and shift the bit to the correct position
-				currentByte |= bit << bitPos
+				// get our bit
+				bit := channelValue & 0b00000001
+
+				// prepare
+				byteIndex := bitIndex / 8
+				if byteIndex >= len(data) {
+					data = append(data, 0)
+				}
+
+				// apply bit
+				// 00010011 (data[byteIndex] before)
+				// 00001000 (bit shifted left (bitIndex % 8) positions)
+				// --------- (Bitwise OR operation)
+				// 00011011 (data[byteIndex] after)
+				data[byteIndex] |= bit << (bitIndex % 8)
 
 				bitIndex++
-
-				// check for EOR
-				if bitIndex%8 == 0 {
-					if currentByte == eofMarker {
-						return data
-					}
-
-					data = append(data, currentByte)
-					currentByte = 0
-				}
 			}
+			// fmt.Printf("x:%d y:%d %08b %08b %08b\n", x, y, r, g, b)
 		}
 	}
+
+	// cut off on EOF
+	eofIndex := bytes.Index(data, eofMarker)
+	if eofIndex != -1 {
+		data = data[:eofIndex]
+	}
+
 	return data
 }
 
@@ -160,6 +184,9 @@ func MaxBits(img *image.RGBA) int {
 	return img.Bounds().Dx() * img.Bounds().Dy() * 3
 }
 
+// Hiding LSB from detection via custom algorithm
+// via switching between 1 and 2 bit pos. last (LSB) and second to last (2LSB)
+// based on a hash from pixel pos
 func hashPos(x, y int) int {
 	pix := fmt.Sprintf("%d", x+y)
 	hash := fnv.New64a()
@@ -167,14 +194,9 @@ func hashPos(x, y int) int {
 	return int(hash.Sum64())
 }
 
-// Trying to hide LSB from detection
-// move the bit from true LSB to the right based on a hash from pixel pos to hide LSB
-func findBitPos(x, y int) uint8 {
+// decide which LSB to use
+func useSecondBit(x, y int) bool {
 	h := hashPos(x, y)
 	pos := h % 2
-	if pos == 0 {
-		return 1
-	} else {
-		return 2
-	}
+	return pos == 1
 }

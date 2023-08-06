@@ -28,10 +28,10 @@ func TestEncodeDecode(t *testing.T) {
 		t.Errorf("Image is not RGBA format")
 	}
 
-	textFile, err := os.ReadFile(dataFilename)
+	dataToEncode, err := os.ReadFile(dataFilename)
 	assert.NoError(t, err, "Error reading ", dataFilename)
 
-	err = Encode(rgba, textFile)
+	err = Encode(rgba, dataToEncode)
 	assert.NoError(t, err, "Error encoding data")
 
 	outFile, err := os.Create(outFilename)
@@ -55,7 +55,7 @@ func TestEncodeDecode(t *testing.T) {
 
 	decodedData := Decode(rgbaDecoded)
 
-	if !bytes.Equal(textFile, decodedData) {
+	if !bytes.Equal(dataToEncode, decodedData) {
 		t.Errorf("Decoded data does not match original data")
 	} else {
 		fmt.Println("Decoded data matches original data!")
