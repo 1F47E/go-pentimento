@@ -11,15 +11,17 @@ The purpose is to practice bitwise operations, cryptography and error correction
 ## Demo results
 <table>
   <tr>
-    <td valign="top"><b>Original Image</b><br>
+    <td valign="top" align="center">
         <a href="assets/original.png">
             <img src="assets/original.png" alt="original" width="420">
         </a>
+        <br><b>Original Image</b>
     </td>
-    <td valign="top"><b>Image with 212 Kb of hidden text</b><br>
+    <td valign="top" align="center">
         <a href="assets/hidden.png">
             <img src="assets/hidden.png" alt="hidden" width="420">
         </a>
+        <br><b>Image with 212 Kb of hidden text</b>
     </td>
   </tr>
 </table>
