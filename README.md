@@ -4,7 +4,41 @@
 TLDR:
 Its a tool to hide text inside images.
 
-This project aims to delve into the field of image steganography, researching and implementing various techniques using Golang. The purpose is solely to practice Golang, with a focus on bitwise operations, encryption, and error correction.
+This project aims to dive into the image steganography, researching and implementing various techniques using Golang.
+The purpose is to practice bitwise operations, encryption, and error correction.
+
+## Demo results
+<table>
+  <tr>
+    <td valign="top"><b>Original Image</b><br>
+        <a href="assets/original.png">
+            <img src="assets/original.png" alt="original" width="420">
+        </a>
+    </td>
+    <td valign="top"><b>Image with 212 Kb of hidden text</b><br>
+        <a href="assets/hidden.png">
+            <img src="assets/hidden.png" alt="hidden" width="420">
+        </a>
+    </td>
+  </tr>
+</table>
+
+## How to use (for now)
+
+Encode
+```
+go run main.go encode original.png secrets.txt
+```
+
+Decode
+```
+go run main.go decode hidden.png
+```
+
+Test fit size
+```
+go run main.go fit original.png
+```
 
 ## Demo results
 <table>
@@ -97,6 +131,7 @@ Basically this paper discusses the use of Reed-Solomon error correcting codes in
 ### [Embedding in Two Least Significant Bits with Wet Paper Coding](https://eprint.iacr.org/2008/255.pdf)
 
 
+
 Ideas from the paper:
 
 LSB Matching Revisited (LSBMR): This scheme improves the security of LSB matching by reducing the number of changes made to the cover image, making it harder for steganalytic tools to detect hidden messages.
@@ -105,13 +140,19 @@ Enhanced LSBMR (ELSBMR): This scheme further improves the security of LSBMR by u
 
 Double-layered Embedding (DLE): This scheme uses two different embedding rates for different parts of the image, improving the security of the hidden message by making it harder to detect with steganalytic tools.
 
+
 ### Steganography Toolkits
+
 https://www.blackhatethicalhacking.com/tools/steganography-toolkits/
+
 ```
 docker run -it --rm -v $(pwd)/data:/data dominicbreuker/stego-toolkit /bin/bash
 zsteg -a out.png
 ```
+
 Simple LSB zsteg detects 100% 
 
 After our custom LSB hashing algo zsteg shows garbage
+
 ![zsteg_results](assets/zsteg.jpg)
+
