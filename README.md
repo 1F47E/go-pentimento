@@ -1,8 +1,10 @@
 # Pentimento
 > In painting, a [pentimento](https://en.wikipedia.org/wiki/Pentimento) (italian) is "the presence or emergence of earlier images, forms, or strokes that have been changed and painted over"
 
+TLDR:
+Its a tool to hide text inside images.
 
-This project aims to explore, research, and implement some techniques in the field of image steganography using Golang.
+This project aims to delve into the field of image steganography, researching and implementing various techniques using Golang. The purpose is solely to practice Golang, with a focus on bitwise operations, encryption, and error correction.
 
 ## Demo results
 <table>
