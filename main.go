@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"go-pentimento/lsb"
 	"image"
 	"image/draw"
 	"image/png"
+	"log"
 	"os"
+
+	"github.com/1F47E/go-pentimento/pkg/lsb"
 )
 
 type Command string
@@ -48,7 +50,7 @@ func main() {
 	// open image
 	f, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error opening image: %v", err)
 	}
 	defer f.Close()
 
@@ -57,7 +59,7 @@ func main() {
 	// read image
 	img, err := png.Decode(f)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error decoding image: %v", err)
 	}
 
 	// convert to RGBA
@@ -71,20 +73,20 @@ func main() {
 		// read data file
 		data, err := os.ReadFile(datafile)
 		if err != nil {
-			panic(fmt.Errorf("error reading data file: %v", err))
+			log.Fatalf("error reading data file: %v", err)
 		}
-		fmt.Printf("Text to hide: %d bits\n", len(data)*8)
+		fmt.Printf("Data to hide: %d bytes\n", len(data))
 
 		// change in place
 		err = lsb.Encode(imgRGBA, data)
 		if err != nil {
-			panic(err)
+			log.Fatalf("Error encoding image: %v", err)
 		}
 
-		outFilename := "out.png"
+		outFilename := "hidden.png"
 		err = saveImage(imgRGBA, outFilename)
 		if err != nil {
-			panic(err)
+			log.Fatalf("Error saving image: %v", err)
 		}
 		fmt.Println("Saved image to", outFilename)
 		os.Exit(0)
@@ -93,7 +95,17 @@ func main() {
 	// DECODE
 	if cmd == Decode {
 		data := lsb.Decode(imgRGBA)
-		fmt.Printf("Hidden data: %s\n", string(data))
+		if data == nil {
+			log.Fatal("No hidden data found")
+		}
+		fmt.Printf("Hidden data size: %d bytes\n", len(data))
+		// save results
+		resFilename := "decoded.txt"
+		err = os.WriteFile(resFilename, data, 0644)
+		if err != nil {
+			log.Fatalf("Error writing decoded data to file: %v", err)
+		}
+		fmt.Println("Data saved to", resFilename)
 		os.Exit(0)
 	}
 
@@ -128,13 +140,13 @@ func debugCreateWhiteImage() {
 	// save image
 	f, err := os.Create("white.png")
 	if err != nil {
-		panic(err)
+		log.Fatalf("error creating file: %v", err)
 	}
 	defer f.Close()
 
 	// encode image
 	err = png.Encode(f, img)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error encoding image: %v", err)
 	}
 }
