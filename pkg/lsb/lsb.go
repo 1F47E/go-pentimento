@@ -1,4 +1,6 @@
 //
+// LSB steganography
+//
 // encoding 3 bits per pixel
 //
 // red channel - first bit
@@ -172,11 +174,6 @@ func Decode(img *image.RGBA) []byte {
 		}
 	}
 
-	// cut off on EOF (single byte)
-	// eofIndex := bytes.IndexByte(data, EOF_MARKER)
-	// if eofIndex != -1 {
-	// 	data = data[:eofIndex]
-	// }
 	// cut of on EOF (multiple bytes)
 	eofIndex := bytes.Index(data, EOF_MARKER)
 	if eofIndex != -1 {

@@ -12,9 +12,9 @@ import (
 )
 
 func TestEncodeDecode(t *testing.T) {
-	origFilename := "../../data/original.png"
-	dataFilename := "../../README.md"
-	outFilename := "../../data/out.png"
+	origFilename := "../../testdata/original.png"
+	dataFilename := "../../testdata/demo.txt"
+	outFilename := "../../testdata/test_out.png"
 
 	imgFile, err := os.Open(origFilename)
 	assert.NoError(t, err, "Error opening image file")
