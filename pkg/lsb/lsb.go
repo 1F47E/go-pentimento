@@ -32,10 +32,11 @@ import (
 	"image/color"
 )
 
-const EOF_MARKER = 0xFF
+// the marker should be unique enough to not be found in the encrypted data
+var EOF_MARKER []byte = []byte{0xFF, 0xFF, 0xFA, 0xAA, 0xFA, 0xFF, 0xFF}
 
 func Encode(img *image.RGBA, data []byte) error {
-	data = append(data, EOF_MARKER)
+	data = append(data, EOF_MARKER...)
 
 	// check if data fits in image
 	maxLen := MaxBits(img)
@@ -43,7 +44,7 @@ func Encode(img *image.RGBA, data []byte) error {
 		return fmt.Errorf("data is too large to fit in image")
 	}
 	perc := float64(len(data)*8) / float64(maxLen) * 100
-	fmt.Printf("Encoding %d/%d bytes - %.2f%%\n", len(data), maxLen, perc)
+	fmt.Printf("Using %.2f%% of container space %d/%d Kb\n", perc, len(data)/1024, maxLen/8/1024)
 
 	// track the index of corrent write bit
 	bitIndex := 0
@@ -171,9 +172,15 @@ func Decode(img *image.RGBA) []byte {
 		}
 	}
 
-	// cut off on EOF
-	eofIndex := bytes.IndexByte(data, EOF_MARKER)
+	// cut off on EOF (single byte)
+	// eofIndex := bytes.IndexByte(data, EOF_MARKER)
+	// if eofIndex != -1 {
+	// 	data = data[:eofIndex]
+	// }
+	// cut of on EOF (multiple bytes)
+	eofIndex := bytes.Index(data, EOF_MARKER)
 	if eofIndex != -1 {
+		fmt.Printf("EOF found at index %d\n", eofIndex)
 		data = data[:eofIndex]
 	}
 
