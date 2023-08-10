@@ -139,7 +139,7 @@ After our custom LSB hashing algo zsteg shows garbage
 - [x] custom lsb with partial 2lsb to avoid detection
 - [ ] add compression
 - [ ] add logger
-- [ ] add tests
+- [x] add tests
 - [ ] add colored output
 - [ ] add visual fill % on encoding
 - [x] encryption
