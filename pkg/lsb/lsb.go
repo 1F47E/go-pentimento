@@ -32,7 +32,11 @@ import (
 	"hash/fnv"
 	"image"
 	"image/color"
+
+	"github.com/1F47E/go-pentimento/pkg/logger"
 )
+
+var log = logger.Log.WithField("pkg", "container")
 
 // the marker should be unique enough to not be found in the encrypted data
 var EOF_MARKER []byte = []byte{0xFF, 0xFF, 0xFA, 0xAA, 0xFA, 0xFF, 0xFF}
@@ -46,7 +50,7 @@ func Encode(img *image.RGBA, data []byte) error {
 		return fmt.Errorf("data is too large to fit in image")
 	}
 	perc := float64(len(data)*8) / float64(maxLen) * 100
-	fmt.Printf("Using %.2f%% of container space %d/%d Kb\n", perc, len(data)/1024, maxLen/8/1024)
+	log.Debugf("Using %.2f%% of container space %d/%d Kb\n", perc, len(data)/1024, maxLen/8/1024)
 
 	// track the index of corrent write bit
 	bitIndex := 0
@@ -90,7 +94,7 @@ func Encode(img *image.RGBA, data []byte) error {
 
 				switch i {
 				case 0:
-					// fmt.Printf("-red before masking: %08b\n", r)
+					// log.Debugf("-red before masking: %08b\n", r)
 
 					// 1 - zero out the bit we want to change
 					// original state of r (for example):    0b10010110
@@ -104,7 +108,7 @@ func Encode(img *image.RGBA, data []byte) error {
 					// res after ORing the bit:             0b10010110
 					r |= bit
 
-					// fmt.Printf("+red after masking: %08b\n", r)
+					// log.Debugf("+red after masking: %08b\n", r)
 
 				case 1:
 					g = (g & mask) | bit
@@ -170,14 +174,14 @@ func Decode(img *image.RGBA) []byte {
 
 				bitIndex++
 			}
-			// fmt.Printf("x:%d y:%d %08b %08b %08b\n", x, y, r, g, b)
+			// log.Debugf("x:%d y:%d %08b %08b %08b\n", x, y, r, g, b)
 		}
 	}
 
 	// cut of on EOF (multiple bytes)
 	eofIndex := bytes.Index(data, EOF_MARKER)
 	if eofIndex != -1 {
-		fmt.Printf("EOF found at index %d\n", eofIndex)
+		log.Debugf("EOF found at index %d\n", eofIndex)
 		data = data[:eofIndex]
 	}
 

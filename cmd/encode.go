@@ -12,7 +12,7 @@ import (
 
 func Encode(args []string) error {
 	if len(args) < 2 {
-		return fmt.Errorf("need image data")
+		return fmt.Errorf("need more data")
 	}
 	fImg := args[0]
 	fData := args[1]
