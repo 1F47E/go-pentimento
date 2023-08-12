@@ -40,7 +40,6 @@ func Open(filename string) (*image.RGBA, error) {
 	bounds := img.Bounds()
 	imgRGBA := image.NewRGBA(bounds)
 	draw.Draw(imgRGBA, bounds, img, bounds.Min, draw.Src)
-	fmt.Printf("Image loaded size %d, type: %s\n", len(imgRGBA.Pix), ext)
 	return imgRGBA, nil
 }
 

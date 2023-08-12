@@ -138,9 +138,9 @@ After our custom LSB hashing algo zsteg shows garbage
 - [x] basic lsb
 - [x] custom lsb with partial 2lsb to avoid detection
 - [ ] add compression
-- [ ] add logger
-- [ ] add tests
-- [ ] add colored output
+- [x] add logger
+- [x] add tests
+- [x] add colored output
 - [ ] add visual fill % on encoding
 - [x] encryption
 - [ ] add metadata with date and filename (optional)
