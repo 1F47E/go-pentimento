@@ -1,3 +1,5 @@
+## [![Go](https://github.com/1F47E/go-pentimento/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/1F47E/go-pentimento/actions/workflows/go.yml) [![Go Report Card](https://goreportcard.com/badge/1F47E/go-pentimento)](https://goreportcard.com/report/1F47E/go-pentimento)
+
 # Pentimento
 > In painting, a [pentimento](https://en.wikipedia.org/wiki/Pentimento) (italian) is "the presence or emergence of earlier images, forms, or strokes that have been changed and painted over"
 
