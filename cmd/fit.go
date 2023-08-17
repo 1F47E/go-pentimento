@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/1F47E/go-pentimento/pkg/img"
-	"github.com/1F47E/go-pentimento/pkg/lsb"
+	"github.com/1F47E/go-pentimento/internal/img"
+	"github.com/1F47E/go-pentimento/internal/lsb"
 )
 
 func Fit(args []string) error {

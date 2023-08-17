@@ -33,7 +33,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/1F47E/go-pentimento/pkg/logger"
+	"github.com/1F47E/go-pentimento/internal/logger"
 )
 
 var log = logger.Log.WithField("pkg", "container")

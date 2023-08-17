@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 
-	myaes "github.com/1F47E/go-pentimento/pkg/aes"
-	"github.com/1F47E/go-pentimento/pkg/container"
-	"github.com/1F47E/go-pentimento/pkg/img"
-	"github.com/1F47E/go-pentimento/pkg/lsb"
+	myaes "github.com/1F47E/go-pentimento/internal/aes"
+	"github.com/1F47E/go-pentimento/internal/container"
+	"github.com/1F47E/go-pentimento/internal/img"
+	"github.com/1F47E/go-pentimento/internal/lsb"
 )
 
 func Decode(args []string) error {

@@ -1,3 +1,20 @@
+// Package provides AES encryption and decryption capabilities with an emphasis on security.
+// It leverages the scrypt key derivation function to improve resistance against brute force attacks.
+//
+// Notes:
+//
+// - Slow Key Derivation: The aesDeriveKey function is designed to be slow for brute force resistance.
+//   This ensures that the derived encryption key is more secure, but it might introduce a noticeable
+//   delay during the encryption process.
+//
+// - Password and Salt: myaes uses a combination of a user-provided password and an internally generated salt
+//   to derive the encryption key. The salt is appended to the encrypted data to be available for decryption.
+//
+// - Nonce in AES-GCM: A nonce (Number used ONCE) is prepended to the encrypted data, necessary for the decryption.
+//
+// - Data Length: The Decrypt function expects data of at least 32 bytes due to the appended salt.
+//
+
 package myaes
 
 import (
